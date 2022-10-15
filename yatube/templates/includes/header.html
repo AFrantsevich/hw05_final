@@ -1,0 +1,54 @@
+<head>
+  {% load static %}
+  <meta charset="utf-8">
+  {% load user_filters %}
+</head>
+<header>
+  <nav class="navbar navbar-light" style="background-color: #505050; ">
+    <div class="container">
+      <a class="in-btn"  href="{% url 'posts:main' %}">
+        <img src="{% static 'img/logo.png' %}"
+             width="30"
+             height="30"
+             class="d-inline-block align-top"
+             alt="">
+        <span style="color:red">Ya</span>tube
+      </a>
+      {% with request.resolver_match.view_name as view_name %}
+        {% if user.is_authenticated %}
+          <a class="in-btn"
+             {% if view_name  == 'posts:follow_index' %}style="color:red"{% endif %}
+             href="{% url 'posts:follow_index' %}"> Избранные авторы</a>
+        {% endif %}
+        <a class="in-btn"
+           {% if view_name  == 'about:tech' %}style="color:red"{% endif %}
+           href="{% url 'about:tech' %}">Что умею</a>
+        <a class="in-btn"
+           {% if view_name  == 'about:author' %}style="color:red"{% endif %}
+           href="{% url 'about:author' %}"> Обо мне</a>
+        <div class="my">
+          <div class="search-box">
+            <button class="search-btn button_hed">
+              <i class="fas fa-search"></i>
+            </button>
+            <input class="search-txt" type="text" placeholder="">
+          </div>
+          {% if view_name  != 'users:signup' %}
+            <div class="user">
+              <button class="user-btn button_hed"
+                      data-bs-toggle="dropdown"
+                      data-bs-auto-close="outside">
+                <i class="fa-regular fa-user "></i>
+              </button>
+              {% if user.is_authenticated %}
+                {% include 'users/aut_user.html' %}
+              {% else %}
+                {% include 'users/login_my.html' %}
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      {% endwith %}
+    </div>
+  </nav>
+</header>

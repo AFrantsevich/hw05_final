@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Custom 404{% endblock %}
+{% block content %}
+  <h1>Custom 505</h1>
+  <p>На нашем сервере проблемы, скоро вернемся.</p>
+  <a href="{% url 'posts:main' %}">Идите на главную</a>
+{% endblock %}

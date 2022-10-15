@@ -1,0 +1,7 @@
+{% if user.is_authenticated %}
+  <h1>
+    <a href="{% url 'posts:main' %}">Все авторы</a>
+  </h1>
+  <a class="nav-link {% if follow %}active{% endif %}"
+     href="{% url 'posts:follow_index' %}">Избранные авторы</a>
+{% endif %}

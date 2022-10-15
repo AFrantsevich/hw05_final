@@ -1,0 +1,11 @@
+<form method="post"
+      action="{% url 'users:logout' %}"
+      class="dropdown-menu p-2"
+      style="position: absolute; transform: translateX(-82%); top: 50px; width: 200px">
+  {% csrf_token %}
+  Пользователь: {{ user.username }}
+  <a class="dropdown-item" href="{% url 'posts:post_create' %}">Добавить пост</a>
+  <button type="submit"
+          class="in-btn button_hed"
+          style="width: 100%; font-size: 16px">Выйти</button>
+</form>
