@@ -17,7 +17,7 @@ User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 
-class TaskPagesTests(TestCase):
+class TaskViewsTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -106,6 +106,20 @@ class TaskPagesTests(TestCase):
                 response = self.authorized_client.get(reverse_name)
                 self.assertIsInstance(
                     response.context['form'], forms.ModelForm)
+
+    def test_cache_task(self):
+        """Проверяем корректную работу кеша"""
+        Post.objects.create(
+            author=self.user,
+            text='Тестовый пост',
+            id=22)
+        response_one = self.authorized_client.get(reverse('posts:main'))
+        Post.objects.get(id=22).delete()
+        response_two = self.authorized_client.get(reverse('posts:main'))
+        cache.clear()
+        response_three = self.authorized_client.get(reverse('posts:main'))
+        self.assertEqual(response_one.content, response_two.content)
+        self.assertNotEqual(response_one.content, response_three.content)
 
 
 class TaskPaginatorTests(TestCase):
@@ -262,33 +276,6 @@ class TaskImageTests(TestCase):
         object = response.context['post']
         self.assertEqual(object.image, self.post.image)
 
-
-class TaskCacheTests(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.user = User.objects.create_user(username='neo')
-        cls.post = Post.objects.create(
-            author=cls.user,
-            text='Тестовый пост',
-        )
-
-    def setUp(self):
-        self.guest_client = Client()
-        self.authorized_client = Client()
-        self.authorized_client.force_login(self.user)
-
-    def test_cache_task(self):
-        """Проверяем корректную работу кеша"""
-        response_one = self.authorized_client.get(reverse('posts:main'))
-        self.post.delete()
-        response_two = self.authorized_client.get(reverse('posts:main'))
-        cache.clear()
-        response_three = self.authorized_client.get(reverse('posts:main'))
-        self.assertEqual(response_one.content, response_two.content)
-        self.assertNotEqual(response_one.content, response_three.content)
-
-
 class FollowingTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -297,10 +284,10 @@ class FollowingTests(TestCase):
         cls.user2 = User.objects.create_user(username='leo')
         cls.user3 = User.objects.create_user(username='areo')
         cls.post = Post.objects.create(
-            author=cls.user,
+            author=cls.user2,
             text='Тестовый пост',
         )
-
+        cls.follower = Follow.objects.create(author=cls.user2, user=cls.user3)
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client2 = Client()
@@ -311,38 +298,37 @@ class FollowingTests(TestCase):
 
     def test_following_task(self):
         """Авторизированный позльзователь может подписываться
-        на авторов и удалять подписки."""
+        на авторов"""
         self.authorized_client.post(reverse(
             'posts:profile_follow',
             kwargs={'username': self.user2}))
-        self.assertEqual(Follow.objects.get().author, self.user2)
-        self.authorized_client.post(reverse(
+        self.assertEqual(Follow.objects.filter(author=self.user2, user=self.user).get().author, self.user2)
+
+    def test_unfollowing_task(self):
+        """Авторизированный позльзователь может отписываться
+    от авторов."""
+        self.authorized_client3.post(reverse(
             'posts:profile_unfollow',
             kwargs={'username': self.user2}))
         follow_count = Follow.objects.count()
         self.assertEqual(follow_count, 0)
 
-    def test_following_correct_task(self):
-        """Новая запись пользователя появляется в ленте тех,
-         кто на него подписан."""
-        self.authorized_client2.post(reverse(
-            'posts:profile_follow',
-            kwargs={'username': self.user}))
-        self.authorized_client.post(
-            reverse('posts:post_create'),
-            {
-                'text': 'Тестовый пост 2222',
-                'author': self.user,
-            }
-        )
-        response = self.authorized_client2.get(reverse(
-            'posts:follow_index'))
-        object = response.context['page_obj']
-        self.assertEqual(len(object), 2)
+
+    def test_follow_index_correct_task(self):
+        """Пост отображается в ленте подписанного пользователя"""
         response = self.authorized_client3.get(reverse(
             'posts:follow_index'))
         object = response.context['page_obj']
+        self.assertEqual(len(object), 1)
+
+    def test_follow_index2_correct_task(self):
+        """Проверяем ленту пользователя без подписок"""
+        response = self.authorized_client.get(reverse(
+            'posts:follow_index'))
+        object = response.context['page_obj']
         self.assertEqual(len(object), 0)
+
+
 
     def test_following_once_task(self):
         """Проверяем что подписаться можно
