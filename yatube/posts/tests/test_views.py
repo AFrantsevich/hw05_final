@@ -309,8 +309,8 @@ class FollowingTests(TestCase):
         self.authorized_client.post(reverse(
             'posts:profile_follow',
             kwargs={'username': self.user2}))
-        self.assertEqual(Follow.objects.filter(
-            author=self.user2, user=self.user).get().author, self.user2)
+        self.assertTrue(Follow.objects.filter(
+            author=self.user2, user=self.user).exists())
 
     def test_unfollowing_task(self):
         """Авторизированный позльзователь может отписываться от авторов."""
@@ -324,8 +324,8 @@ class FollowingTests(TestCase):
         """Пост отображается в ленте подписанного пользователя."""
         response = self.authorized_client3.get(reverse(
             'posts:follow_index'))
-        object = response.context['page_obj']
-        self.assertEqual(len(object), 1)
+        object = response.context['page_obj'][0]
+        self.assertEqual(object, self.post)
 
     def test_follow_index_user_unfollow(self):
         """Проверяем ленту пользователя без подписок."""
