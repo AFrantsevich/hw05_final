@@ -34,7 +34,6 @@ class TaskURLTests(TestCase):
 
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
-
         templates_url_names = {
             '/': 'posts/index.html',
             f'/group/{self.group.slug}/': 'posts/group_list.html',
@@ -64,8 +63,11 @@ class TaskURLTests(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK.value)
 
     def test_url_exists_guest(self):
-        """Проверяем недоступность URL-адресов
-        неавторизированному пользователю."""
+        """
+
+        Проверяем недоступность
+        URL-адресов неавторизированному пользователю.
+        """
         list_url = [
             f'/posts/{self.post.id}/edit/',
             '/create/',

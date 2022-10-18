@@ -95,8 +95,11 @@ class TaskViewsTests(TestCase):
         self.assertEqual(self.param(first_object), self.param(post_list))
 
     def test_correct_form(self):
-        """Шаблоны post_edit и post_create
-        сформированы с правильным контекстом."""
+        """
+
+        Шаблоны post_edit и post_create
+        сформированы с правильным контекстом.
+        """
         templates_pages_names = [
             reverse('posts:post_edit', kwargs={'post_id': self.post.id}),
             reverse('posts:post_create'),
@@ -108,7 +111,7 @@ class TaskViewsTests(TestCase):
                     response.context['form'], forms.ModelForm)
 
     def test_cache_task(self):
-        """Проверяем корректную работу кеша"""
+        """Проверяем корректную работу кеша."""
         Post.objects.create(
             author=self.user,
             text='Тестовый пост',
@@ -180,8 +183,11 @@ class TaskNewPostTests(TestCase):
         self.authorized_client.force_login(self.user)
 
     def test_pages_new_post_show_correct_context(self):
-        """Проверяем что при создании поста он отображается
-        на нужных страницах"""
+        """
+
+        Проверяем что при создании поста
+        он отображается на нужных страницах.
+        """
         self.post = Post.objects.create(
             author=self.user,
             text='Тестовый пост2',
@@ -259,7 +265,7 @@ class TaskImageTests(TestCase):
         self.authorized_client.force_login(self.user)
 
     def test_image_task(self):
-        """Тестируем что изобраение передается на нужные страницы"""
+        """Тестируем что изобраение передается на нужные страницы."""
         templates_pages_names = [
             reverse('posts:main'),
             reverse('posts:profile', kwargs={'username': self.user}),
@@ -276,6 +282,7 @@ class TaskImageTests(TestCase):
         object = response.context['post']
         self.assertEqual(object.image, self.post.image)
 
+
 class FollowingTests(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -288,6 +295,7 @@ class FollowingTests(TestCase):
             text='Тестовый пост',
         )
         cls.follower = Follow.objects.create(author=cls.user2, user=cls.user3)
+
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client2 = Client()
@@ -297,42 +305,37 @@ class FollowingTests(TestCase):
         self.authorized_client3.force_login(self.user3)
 
     def test_following_task(self):
-        """Авторизированный позльзователь может подписываться
-        на авторов"""
+        """Авторизированный позльзователь может подписываться на авторов."""
         self.authorized_client.post(reverse(
             'posts:profile_follow',
             kwargs={'username': self.user2}))
-        self.assertEqual(Follow.objects.filter(author=self.user2, user=self.user).get().author, self.user2)
+        self.assertEqual(Follow.objects.filter(
+            author=self.user2, user=self.user).get().author, self.user2)
 
     def test_unfollowing_task(self):
-        """Авторизированный позльзователь может отписываться
-    от авторов."""
+        """Авторизированный позльзователь может отписываться от авторов."""
         self.authorized_client3.post(reverse(
             'posts:profile_unfollow',
             kwargs={'username': self.user2}))
         follow_count = Follow.objects.count()
         self.assertEqual(follow_count, 0)
 
-
-    def test_follow_index_correct_task(self):
-        """Пост отображается в ленте подписанного пользователя"""
+    def test_follow_index_correct(self):
+        """Пост отображается в ленте подписанного пользователя."""
         response = self.authorized_client3.get(reverse(
             'posts:follow_index'))
         object = response.context['page_obj']
         self.assertEqual(len(object), 1)
 
-    def test_follow_index2_correct_task(self):
-        """Проверяем ленту пользователя без подписок"""
+    def test_follow_index_user_unfollow(self):
+        """Проверяем ленту пользователя без подписок."""
         response = self.authorized_client.get(reverse(
             'posts:follow_index'))
         object = response.context['page_obj']
         self.assertEqual(len(object), 0)
 
-
-
     def test_following_once_task(self):
-        """Проверяем что подписаться можно
-        только один раз"""
+        """Проверяем что подписаться можно только один раз."""
         self.authorized_client.post(reverse(
             'posts:profile_follow',
             kwargs={'username': self.user2}))

@@ -106,8 +106,11 @@ class TaskCommentTests(TestCase):
         self.authorized_client.force_login(self.user)
 
     def test_comment_post(self):
-        """Проверяем что при отправке комментария
-        он отображается на странице поста."""
+        """
+
+        Проверяем что при отправке комментария
+        он отображается на странице поста.
+        """
         self.authorized_client.post(
             reverse('posts:add_comment', kwargs={'post_id': self.post.id}),
             {
