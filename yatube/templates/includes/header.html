@@ -21,6 +21,9 @@
              href="{% url 'posts:follow_index' %}"> Избранные авторы</a>
         {% endif %}
         <a class="in-btn"
+           {% if view_name  == 'posts:best' %}style="color:red"{% endif %}
+           href="{% url 'posts:best' %}">Лучшие посты</a>
+        <a class="in-btn"
            {% if view_name  == 'about:tech' %}style="color:red"{% endif %}
            href="{% url 'about:tech' %}">Что умею</a>
         <a class="in-btn"
@@ -38,7 +41,7 @@
               <button class="user-btn button_hed"
                       data-bs-toggle="dropdown"
                       data-bs-auto-close="outside">
-                <i class="fa-regular fa-user "></i>
+                <i class="fa-regular fa-user"></i>
               </button>
               {% if user.is_authenticated %}
                 {% include 'users/aut_user.html' %}

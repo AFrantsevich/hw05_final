@@ -3,52 +3,111 @@
 {% block title %}Пост: {{ post.text|slice:":10" }}{% endblock %}
 {% block content %}
   {% load thumbnail %}
-  <article>
-    <ul>
-      <li>
-        Дата публикации: {{ post.pub_date|date:"d E Y" }}
-        [{{ post.pub_date|timesince }} назад.]
-      </li>
-      <li>
-        Группа:
-        {% if post.group %}
-          {{ post.group.title }}
-          <a href="{% url 'posts:group_posts' post.group.slug %}">[Все записи группы]</a>
-        {% else %}
-          Пост без группы(
+  {% with request.resolver_match.view_name as view_name %}
+    <div class="row justify-content-md-center">
+      <div class="col col-lg-7">
+        <article>
+          <div class="inf">
+            <div class="post">
+              <div class="inf-panel" style="margin-bottom: 15px">
+                <div class="inf-panel" style="background: none">
+                  {% if post.author == request.user %}
+                    <div style="padding: 10px">
+                      <div class="user-btn button_hed" style="border-radius: 50%;">
+                        <a class="in-btn" href="{% url 'posts:post_edit' post.pk %}">
+                          <i class="fa-regular fa-pen-to-square fa-sm"></i> </a>
+                      </div>
+                    </div>
+                  {% endif %}
+                  <div class="inf-panel" style="background: none; padding: 10px;">
+                    <div class="user-btn button_hed" style="border-radius: 50%;">
+                      <a class="in-btn" href="{% url 'posts:profile' post.author  %}">
+                        <i class="fa-regular fa-user fa-sm"></i> </a>
+                    </div>
+                    <div style="padding-left:10px; ">
+                      <b>{{ post.author.get_full_name }}</b>
+                    </div>
+                  </div>
+                </div >
+                <div style="padding-right: 10px">
+                  <i class="fa-solid fa-calendar-days fa-xl" style="padding-right: 5px">
+                  </i>{{ post.pub_date|date:"d E Y" }}  [{{ post.pub_date|timesince }} назад.]
+                </div>
+              </div>
+              <div class="post-block">
+                <div style="font-size: 18px; padding-top: 2px; text-align: justify">{{ post.text }}</div>
+              </div>
+              <div>
+                {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+                <img class="card-img my-2" src="{{ im.url }}">
+              {% endthumbnail %}
+            </div>
+            <div class="inf-panel " style="margin-top: 15px;">
+              <div class="inf-panel" style="background: none">
+                <div style="padding: 10px">
+                  <div class="user-btn button_hed" style="border-radius: 50%;">
+                    <a class="in-btn" href="{% url 'posts:post_detail' post.pk %}">
+                      <i class="fa-solid fa-info"></i> </a>
+                  </div>
+                </div>
+                {% if post.group %}
+                  <div class="inf-panel" style="background: none; padding: 10px;">
+                    <div class="user-btn button_hed" style="border-radius: 50%;">
+                      <a class="in-btn" href="{% url 'posts:group_posts' post.group.slug %}">
+                        <i class="fa-solid fa-user-group fa-xs"></i></i> </a>
+                    </div>
+                    <div style="padding-left:10px; ">{{ post.group.title }}</div>
+                  </div>
+                {% endif %}
+              </div >
+              <div style="margin-right: 10px">{% include 'posts/../includes/raiting.html' %}</div>
+            </div>
+          </div>
+        </div>
+      </article>
+      <div class="" style="border-radius: 5px;">
+        {% if user.is_authenticated %}
+          <div class="inf-panel2">
+            <div style="margin-left:10px ">Добавить комментарий</div>
+          </div>
+          <form method="post"
+                action="{% url 'posts:add_comment' post.id %}"
+                style="margin: 0px; background: none">
+            {% csrf_token %}
+            {{ form.text|addclass:"myform" }}
+            <button type="submit"
+                    class="in-btn button_hed"
+                    style="width: 30%;
+                           font-size: 16px;
+                           margin-top: 10px;
+                           margin-bottom: 20px;
+                           width: 100px;
+                           border-radius: 5px;">
+              Отправить
+            </button>
+          </form>
         {% endif %}
-      </li>
-      <li>Автор: {{ post.author.get_full_name }}</li>
-      <li>Всего постов автора: {{ post.author.posts.count }}</li>
-      <li>
-        <a href="{% url 'posts:profile' post.author %}">Все посты пользователя</a>
-      </li>
-    </ul>
-    <p>{{ post.text }}</p>
-    {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
-    <img class="card-img my-2" src="{{ im.url }}">
-  {% endthumbnail %}
-  {% if user.is_authenticated %}
-    <div class="card my-4">
-      <h5 class="card-header">Добавить комментарий:</h5>
-      <div class="card-body">
-        <form method="post" action="{% url 'posts:add_comment' post.id %}">
-          {% csrf_token %}
-          <div class="form-group mb-2">{{ form.text|addclass:"form-control" }}</div>
-          <button type="submit" class="btn btn-primary">Отправить</button>
-        </form>
       </div>
-    </div>
-  {% endif %}
-  {% for comment in comments %}
-    <div class="media mb-4">
-      <div class="media-body">
-        <h5 class="mt-0">
-          <a href="{% url 'posts:profile' comment.author.username %}">{{ comment.author.username }}</a>
-        </h5>
-        <p>{{ comment.text }}</p>
-      </div>
-    </div>
-  {% endfor %}
-</article>
+      <div style="margin-top: 20px;">
+        {% for comment in comments %}
+          <div class="inf-panel"
+               style="background: none; padding: 5px; margin-top: 40px">
+            <div class="inf-panel" style="background: none; ">
+              <div class="user-btn button_hed" style="border-radius: 50%;">
+                <a class="in-btn"
+                   href="{% url 'posts:profile' comment.author.username %}">
+                  <i class="fa-regular fa-user fa-sm"></i> </a>
+              </div>
+              <div style="padding-left:10px;">
+                <b style="padding-left:5px ">{{ comment.author.get_full_name }}</b>
+              </div>
+            </div>
+          </div>
+          <div style="padding: 10px; background: none">{{ comment.text }}</div>
+        </div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+</div>
+</div>
 {% endblock %}

@@ -42,6 +42,12 @@ class Post(models.Model):
         ordering = ['-pub_date']
 
 
+class WhoVoted(models.Model):
+    username = models.TextField(null=True)
+    post_id = models.IntegerField(null=True)
+    type = models.TextField(null=True)
+
+
 class Comment(models.Model):
     text = models.TextField(null=True)
     post = models.ForeignKey(

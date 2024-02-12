@@ -1,3 +1,7 @@
-# hw05_final
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+<h2>Всем привет, это Андрей <img src="https://github.com/blackcater/blackcater/raw/main/images/Hi.gif" height="32"/></h2>
+</h2> 
+
+<h3>Вы находитесь на странице моего учебного проекта Яндекс Практикум</h3> 
+
+Перед Вами сайт-социальная сеть, построенная на Django. Пользователи могут регистрироваться, размещать посты, оставлять комментарии. Так же предусмотрена система рейтинга у каждого поста (За идею спасибо Pikabu)

@@ -1,0 +1,26 @@
+<div class="raiting">
+  <form action="{% url 'posts:like' post.pk %}" method="POST" class="test">
+    {% csrf_token %}
+    <input type="hidden" name="args"  value="{{ 'like' }}">
+    <input type="hidden" name="user"  value="{{ request.user }}">
+    <button type="submit" style="border: none; background: none; font-size: 20px">
+      <div style="transform: translateY(5%)">
+        <i class="fa-solid fa-caret-up"></i>
+      </div>
+    </button>
+  </form>
+  <div style="font-size: 20px" class="test2">{{ post.raiting }}</div>
+  <form action="{% url 'posts:dislike' post.pk %}" method="POST" class="test">
+    {% csrf_token %}
+    <input type="hidden" name="args"  value="{{ 'dislike' }}">
+    <input type="hidden" name="user"  value="{{ request.user }}">
+    <button type="submit"
+            style="border: none;
+                   background: none;
+                   font-size: 20px;">
+      <div style="transform: translateY(-16%);">
+        <i class="fa-solid fa-sort-down"></i>
+      </div>
+    </button>
+  </form>
+</div>

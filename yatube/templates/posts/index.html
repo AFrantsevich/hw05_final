@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Последние обновления на сайте{% endblock %}
 {% block content %}
-  {% load cache %}
-  {% cache 20 main page_obj.number %}
-  <h1>Последние обновления на сайте</h1>
-  {% include 'posts/../includes/posts.html' %}
-{% endcache %}
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-7">
+      <h1>Последние обновления на сайте</h1>
+      {% include 'posts/../includes/posts.html' %}
+    </div>
+  </div>
 {% endblock %}

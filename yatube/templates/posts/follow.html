@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Избранные авторы{% endblock %}
 {% block content %}
-  <h1>Избранные авторы</h1>
-  {% include 'posts/../includes/posts.html' %}
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-7">
+      <h1>Избранные авторы</h1>
+      {% include 'posts/../includes/posts.html' %}
+    </div>
+  </div>
 {% endblock %}

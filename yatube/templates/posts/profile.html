@@ -4,20 +4,30 @@
   {{ author.get_full_name }}"
 {% endblock %}
 {% block content %}
-  <h1>Все посты пользователя "{{ author.get_full_name }}"</h1>
-  <p>Всего постов от автора: {{ author.posts.count }}</p>
-  {% if request.user != author %}
-    {% if following %}
-      <a class="btn btn-lg btn-dark"
-         href="{% url 'posts:profile_unfollow' author.username %}"
-         role="button">Отписаться</a>
-    {% else %}
-      <a class="btn btn-lg btn-dark"
-         href="{% url 'posts:profile_follow' author.username %}"
-         role="button">Подписаться</a>
-    {% endif %}
-  {% endif %}
-  {% for post in page_obj %}
-    {% include 'posts/../includes/posts.html' %}
-  {% endfor %}
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-7">
+      <h1>Все посты пользователя "{{ author.get_full_name }}"</h1>
+      <p>Всего постов от автора: {{ author.posts.count }}</p>
+      {% if request.user != author %}
+        {% if following %}
+          <a class="in-btn button_hed"
+             style="font-size: 16px;
+                    width: 100px;
+                    height:30px;
+                    border-radius: 5px;"
+             href="{% url 'posts:profile_unfollow' author.username %}"
+             role="button">Отписаться</a>
+        {% else %}
+          <a class="in-btn button_hed"
+             style="font-size: 16px;
+                    width: 100px;
+                    height:30px;
+                    border-radius: 5px;"
+             href="{% url 'posts:profile_follow' author.username %}"
+             role="button">Подписаться</a>
+        {% endif %}
+      {% endif %}
+      {% include 'posts/../includes/posts.html' %}
+    </div>
+  </div>
 {% endblock %}

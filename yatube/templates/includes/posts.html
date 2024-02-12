@@ -1,36 +1,50 @@
 {% load thumbnail %}
 {% with request.resolver_match.view_name as view_name %}
   {% for post in page_obj %}
-    <div class="inf"
-         {% if not forloop.last %} style="border-bottom: 1px solid rgba(0, 0, 0, 0.22);"{% endif %}>
+    <div class="inf">
       <div class="post">
-        <ul>
-          {% if view_name  != 'posts:profile' %}
-            <li>
-              Автор: <a href="{% url 'posts:profile' post.author  %}">{{ post.author.get_full_name }}</a>
-            </li>
-          {% endif %}
-          <li>
-            Дата публикации: {{ post.pub_date|date:"d E Y" }}
-            [{{ post.pub_date|timesince }} назад.]
-          </li>
-          {% if post.author == request.user %}
-            <li>
-              <a href="{% url 'posts:post_edit' post.pk %}">Редактировать запись</a>
-            </li>
-          {% endif %}
-        </ul >
-        <div style="padding-bottom: 5px; font-size: 18px">{{ post.text }}</div>
-        {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
-        <img class="card-img my-2" src="{{ im.url }}">
-      {% endthumbnail %}
-      <div style="padding-bottom: 10px">
-        {% if post.group %}
-          Все записи группы: <a href="{% url 'posts:group_posts' post.group.slug %}">"{{ post.group.title }}"</a>
-        {% endif %}
-        <div>
-          <a href="{% url 'posts:post_detail' post.pk %}">Подробнее</a>
+        <div class="inf-panel" style="margin-bottom: 15px">
+          <div class="inf-panel" style="background: none; padding: 10px;">
+            <div class="user-btn button_hed" style="border-radius: 50%;">
+              <a class="in-btn" href="{% url 'posts:profile' post.author  %}">
+                <i class="fa-regular fa-user fa-sm"></i> </a>
+            </div>
+            <b style="padding-left:10px ">{{ post.author.get_full_name }}</b>
+          </div>
+          <div style="padding-right: 10px">
+            <i class="fa-solid fa-calendar-days fa-xl" style="padding-right: 5px">
+            </i>{{ post.pub_date|date:"d E Y" }}  [{{ post.pub_date|timesince }} назад.]
+          </div>
         </div>
+        <div class="post-block">
+          {% if post.author == request.user %}{% endif %}
+          <div style="font-size: 18px; padding-top: 2px;text-align: justify">{{ post.text|slice:":500" }}</div>
+        </div>
+        <div>
+          {% thumbnail post.image "960x600" crop="center" upscale=True as im %}
+          <img class="card-img my-2" src="{{ im.url }}">
+        {% endthumbnail %}
+      </div>
+      <div class="inf-panel " style="margin-top: 15px;">
+        <div class="inf-panel" style="background: none">
+          <div style="padding: 10px">
+            <a class="in-btn " href="{% url 'posts:post_detail' post.pk %}">
+              <div class="user-btn button_hed" style="border-radius: 50%;">
+                <i class="fa-solid fa-info in-btn"></i>
+              </div>
+            </a>
+          </div>
+          {% if post.group %}
+            <div class="inf-panel" style="background: none; padding: 10px;">
+              <div class="user-btn button_hed" style="border-radius: 50%;">
+                <a class="in-btn" href="{% url 'posts:group_posts' post.group.slug %}">
+                  <i class="fa-solid fa-user-group fa-xs"></i></i> </a>
+              </div>
+              <div style="padding-left:10px; ">{{ post.group.title }}</div>
+            </div>
+          {% endif %}
+        </div >
+        <div style="margin-right: 10px">{% include 'posts/../includes/raiting.html' %}</div>
       </div>
     </div>
   </div>

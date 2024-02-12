@@ -4,8 +4,8 @@
   {% load user_filters %}
 </head>
 <form method="post"
-      class="dropdown-menu p-2 "
-      style="transform: translateX(-82%); top: 50px; width: 200px">
+      class="dropdown-menu p-1 "
+      style="transform: translateX(-82%); top: 50px; width: 240px">
   {% csrf_token %}
   {% if form.errors %}
     {% for field in form %}
@@ -21,7 +21,7 @@
     <label class="form-label">Password</label>
     {{ form_aut.password|addclass:'form-control' }}
   </div>
-  <div class="mb-3">
+  <div class="mb-2">
     <div class="form-check">
       <input type="checkbox" class="form-check-input" id="dropdownCheck2">
       <label class="form-check-label" for="dropdownCheck2">Помни меня</label>
@@ -32,5 +32,5 @@
           style="width: 100%; font-size: 16px">Войти</button>
   <div class="dropdown-divider"></div>
   <a class="dropdown-item" href="#">Забув пароль(</a>
-  <a class="dropdown-item" href="{% url 'users:signup' %}">Стать сооучастником</a>
+  <a class="dropdown-item" href="{% url 'users:signup' %}">Стать соучастником</a>
 </form>

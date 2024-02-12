@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
-from .models import Post, Group, User, Follow
+from .models import Post, Group, User, WhoVoted, Follow
 from .utilits import paginator_func
 from .forms import PostForm, CommentForm
 
@@ -132,3 +133,79 @@ def profile_unfollow(request, username):
     if follower:
         follower.delete()
     return redirect('posts:profile', username)
+
+
+def like(args, post_id):
+    str = args.POST.get('args')
+    user = args.POST.get('user')
+    user_exists = WhoVoted.objects.filter(
+        post_id=post_id).filter(username=user).exists()
+    raiting = Post.objects.get(pk=post_id).raiting
+    new_raiting = Post.objects.get(pk=post_id)
+    if user != 'AnonymousUser':
+        if not user_exists or WhoVoted.objects.filter(post_id=post_id).filter(
+                username=user).get(username=user).username != user:
+            raiting += 1
+            new_raiting.raiting = raiting
+            new_raiting.save()
+            new_vote = WhoVoted()
+            new_vote.username = user
+            new_vote.post_id = post_id
+            new_vote.type = str
+            new_vote.save()
+            return JsonResponse(data={'new_raiting': Post.objects.get(
+                pk=post_id).raiting, 'status': 'OK'})
+        elif WhoVoted.objects.filter(post_id=post_id).filter(
+                username=user).get(post_id=post_id).type == 'dislike':
+            raiting += 1
+            new_raiting.raiting = raiting
+            new_raiting.save()
+            vote = WhoVoted.objects.filter(username=user).filter(
+                post_id=post_id)
+            vote.delete()
+            return JsonResponse(data={'new_raiting': Post.objects.get(
+                pk=post_id).raiting, 'status': 'OK'})
+        return JsonResponse(data={'status': 'Repeated'})
+    return JsonResponse(data={'status': 'NeOk'})
+
+
+def dislike(args, post_id):
+    str = args.POST.get('args')
+    user = args.POST.get('user')
+    user_exists = WhoVoted.objects.filter(
+        post_id=post_id).filter(username=user).exists()
+    raiting = Post.objects.get(pk=post_id).raiting
+    new_raiting = Post.objects.get(pk=post_id)
+    if user != 'AnonymousUser':
+        if not user_exists or WhoVoted.objects.filter(post_id=post_id).filter(
+                username=user).get(username=user).username != user:
+            raiting -= 1
+            new_raiting.raiting = raiting
+            new_raiting.save()
+            new_user = WhoVoted()
+            new_user.username = user
+            new_user.post_id = post_id
+            new_user.type = str
+            new_user.save()
+            return JsonResponse(data={'new_raiting': Post.objects.get(
+                pk=post_id).raiting, 'status': 'OK'})
+        elif WhoVoted.objects.filter(post_id=post_id).filter(
+                username=user).get(post_id=post_id).type == 'like':
+            raiting -= 1
+            new_raiting.raiting = raiting
+            new_raiting.save()
+            vote = WhoVoted.objects.filter(
+                username=user).filter(post_id=post_id)
+            vote.delete()
+            return JsonResponse(data={'new_raiting': Post.objects.get(
+                pk=post_id).raiting, 'status': 'OK'})
+        return JsonResponse(data={'status': 'Repeated'})
+    return JsonResponse(data={'status': 'NeOk'})
+
+
+def best_posts(request):
+    template = 'posts/best_posts.html'
+    post_list = Post.objects.all().order_by('-raiting')
+    page_obj = paginator_func(request, post_list, NUMB_POSTS)
+    context = {'page_obj': page_obj}
+    return render(request, template, context)
